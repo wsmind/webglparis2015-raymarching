@@ -84,9 +84,17 @@
 					<pre><code data-trim>
 // Vertex shader
 
+uniform vec2 resolution;
 attribute vec2 position;
+varying vec2 uv;
+
 void main()
 {
+    uv = position;
+    
+    // compensate for screen ratio
+    uv.x *= resolution.x / resolution.y;
+    
     gl_Position = vec4(position, 0.0, 1.0);
 }
 					</code></pre>
@@ -100,83 +108,64 @@ void main()
 				</section>
 
 				<section>
+					<h2>Raytracing</h2>
+                    <p><img src="assets/raytracing.png" /></p>
+				</section>
+
+				<section>
+					<h2>Camera model</h2>
+					<p>Position</p>
+					<p>One ray per pixel</p>
+					<p>FOV?</p>
+                    <p><img src="assets/fov.png" /></p>
+				</section>
+                
+				<section>
+					<h2>Scene model</h2>
+					<p>Need to compute ray-geometry intersection</p>
+					<p>Simple plane example (y = 0)</p>
+					<pre><code data-trim>
+float intersectPlane(vec3 pos, vec3 dir)
+{
+    return -pos.y / dir.y;
+}
+					</code></pre>
+				</section>
+                
+				<section>
+					<h2>Distance fields</h2>
+					<p>Distance to closest surface, defined for every point in space</p>
+					<p>map(position) -> distance</p>
+					<pre><code data-trim>
+float plane(vec3 pos)
+{
+    return pos.y;
+}
+					</code></pre>
+				</section>
+                
+				<section>
+					<h2>Distance fields</h2>
+					<p>IMAGE</p>
+				</section>
+                
+				<section>
+					<h2>Distance fields</h2>
+					<p>sphere (rt) vs sphere (df)</p>
+				</section>
+                
+				<section>
+					<h2>Sphere Tracing</h2>
+					<p>IMAGE</p>
+				</section>
+                
+				<section>
 					<h2>Tradeoffs</h2>
 					<p>Very flexible</p>
 					<p>But slow</p>
                     <p>Though optimizable</p>
 				</section>
 
-				<section>
-					<h2>Symbol map</h2>
-					<pre><code data-trim>
-{
-  "addEventListener":"aEL",
-  "createAnalyser":"cA",
-  "createBiquadFilter":"cBF",
-  "createBuffer":"cB",
-  "createBufferSource":"cBS",
-  "createChannelMerger":"cCM",
-  "createChannelSplitter":"cCS",
-  // etc.
-}
-					</code></pre>
-				</section>
-				
-				<section>
-					<h2>ad-hoc sed (full word replace)</h2>
-					<pre><code data-trim>
-for (var symbol in symbolMap)
-{
-  var newName = symbolMap[symbol];
-  code = code.replace(new RegExp("([^a-zA-Z0-9_])" + symbol
-           + "([^a-zA-Z0-9_])", "g"), "$1" + newName + "$2");
-}
-					</code></pre>
-					<p>Executed <i>after</i> closure compiler</p>
-				</section>
-				
-				<section data-background="#a50" data-background-transition="slide">
-					<h2>Other things we tried</h2>
-				</section>
-				
-				<section>
-					<h2>Minifying very frequent symbols</h2>
-					<pre><code data-trim>
-sed -i 's/function/@/g' $EXPORT_ROOT/demo.min2.js
-sed -i 's/return/`/g' $EXPORT_ROOT/demo.min2.js
-sed -i 's/var/~/g' $EXPORT_ROOT/demo.min2.js
-					</code></pre>
-					<p>Didn't gain much, huffman (from PNG packing) already excels at this</p>
-				</section>
-				
-				<section>
-					<h2>Using libs (glMatrix, thx @tojiro!)</h2>
-					<p>It works, and can be minified</p>
-					<p>Make sure you remove the few things that prevent minification</p>
-					<pre><code data-trim>
-// very popular anti-minification pattern
-(function(){
-  // lib code
-})()
-					</code></pre>
-					<p>Some functions entirely reimplemented for size (lookAt)</p>
-				</section>
-				
-				<section data-background="#a50" data-background-transition="slide">
-					<h2>Size matters</h2>
-				</section>
-				
-				<section>
-					<h2>Results</h2>
-					<pre><code data-trim>
-$ wc -c *
- 193370 demo.js
-  36798 demo.min.js
-  32273 demo.min2.js
-  12230 demo.png.html
-					</code></pre>
-				</section>
-				
 				<section data-state="demo" data-demo="questions">
 					<h2>Questions?</h2>
 					<p><small>And particles!</small></p>

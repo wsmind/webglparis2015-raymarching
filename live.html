@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <script type="text/javascript">
+        
+        
+        
+        /* IN CASE OF EMERGENCY */
+        /*   USE WITH CAUTION   */
+        
+        var thanksForAllTheFish = 1
+        
+        
+        
+        </script>
+        
         <style type="text/css">
             body
             {
@@ -91,8 +104,8 @@ void main()
 
             function resize()
             {
-                canvas.width = canvas.clientWidth
-                canvas.height = canvas.clientHeight
+                canvas.width = canvas.clientWidth / thanksForAllTheFish
+                canvas.height = canvas.clientHeight / thanksForAllTheFish
                 gl.viewport(0, 0, canvas.width, canvas.height)
             }
             
@@ -118,9 +131,13 @@ void main()
                 }
                 
                 var vs = "\
+                    uniform vec2 resolution;\
                     attribute vec2 position;\
+                    varying vec2 uv;\
                     void main()\
                     {\
+                        uv = position;\
+                        uv.x *= resolution.x / resolution.y;\
                         gl_Position = vec4(position, 0.0, 1.0);\
                     }\
                 "
