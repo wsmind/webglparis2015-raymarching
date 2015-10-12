@@ -182,27 +182,66 @@ float sphere(vec3 pos, float radius)
                 
 				<section>
 					<h2>Sphere Tracing</h2>
-					<p>IMAGE</p>
+                    <h3>aka "marching"</h3>
+                    <p><img src="assets/sphere-tracing.png" /></p>
 				</section>
                 
 				<section>
-					<h2>Improvements</h2>
+					<h2>Playing with space</h2>
+					<p>Box</p>
+                    <pre><code data-trim>
+float box(vec3 pos, vec3 size)
+{
+    return length(max(abs(pos) - size, 0.0));
+}
+                    </code></pre>
+					<p>Rounded Box</p>
+                    <pre><code data-trim>
+float box(vec3 pos, vec3 size, float radius)
+{
+    return length(max(abs(pos) - size, 0.0)) - radius;
+}
+                    </code></pre>
+				</section>
+
+				<section>
+					<h2>Playing with space</h2>
+					<p>Any math function works!</p>
+                    <p>mod()</p>
+                    <p>sin()</p>
+                    <p>abs()</p>
+                    <p>etc.</p>
+				</section>
+                
+				<section>
+					<h2>Playing with colors</h2>
+                    <p>Simple procedural materials</p>
+                    <p>Fake lighting</p>
+				</section>
+                
+				<section>
+					<h2>Other Improvements</h2>
 					<p>Normals</p>
-					<p>Space manipulations</p>
 					<p>BRDFs</p>
 					<p>Scattering</p>
+					<p>Occlusion</p>
+					<p>Other ideas?</p>
 				</section>
                 
 				<section>
 					<h2>Tradeoffs</h2>
-					<p>Very flexible</p>
-					<p>But slow</p>
-                    <p>Though optimizable</p>
+					<p>Very flexible, but slow</p>
+					<p>Some optimizations work (e.g. bounding boxes)</p>
 				</section>
 
+				<section>
+					<h2>Make demos!</h2>
+					<p>Perfect candidate for raymarching</p>
+					<p><a href="http://cookie.paris">http://cookie.paris</a></p>
+				</section>
+                
 				<section data-state="demo" data-demo="questions">
 					<h2>Questions?</h2>
-					<p><small>And particles!</small></p>
 				</section>
 			</div>
 
@@ -369,11 +408,11 @@ float sphere(vec3 pos, float radius)
 				}
 				else if (demoEffect == "questions")
 				{
-					particleShader.setFloatUniform("effect1", 0.0)
+					particleShader.setFloatUniform("effect1", 1.0)
 					particleShader.setFloatUniform("effect2", 0.0)
-					particleShader.setFloatUniform("effect3", 1.0)
+					particleShader.setFloatUniform("effect3", 0.0)
 					//particleShader.setFloatUniform("effect4", 0.0)
-					particleShader.setFloatUniform("perspective", Math.sin(time * 0.001) * 0.04 + 0.04)
+					particleShader.setFloatUniform("perspective", Math.sin(time * 0.001) * 0.04 - 0.04)
 				}
 				
 				// point size in pixel must be relative to screen/canvas resolution

@@ -47,7 +47,7 @@ float map(vec3 pos)
     //pos.xy = rotate(pos.xy, sin(time) * pos.y * 0.2);
     pos.xz = rotate(pos.xz, pos.y * sin(time + i) * 0.4);
     //pos.yz = rotate(pos.yz, time * 0.7);
-    return min(p, roundedBox(pos, vec3(1.0, 7.0, 1.0), 0.4));
+    return min(p, roundedBox(pos, vec3(1.0, 7.0, 1.0), 0.2));
 }
 
 vec3 computeNormal(vec3 pos)
@@ -78,6 +78,19 @@ float specular(vec3 normal, vec3 dir)
     return pow(clamp(dot(h, normal), 0.0, 1.0), 100.0);
 }
 
+float occlusion(vec3 pos, vec3 normal)
+{
+    const float OCCLUSION_DISTANCE = 0.3;
+    float occ = 1.0;
+    for (int i = 0; i < 5; i++)
+    {
+        pos += normal * OCCLUSION_DISTANCE;
+        occ = min(occ, map(pos) / OCCLUSION_DISTANCE);
+    }
+    
+    return occ;
+}
+
 void main()
 {
     vec3 pos = vec3(sin(time * 0.1) * 20.0, 7.0 + sin(time * 0.4) * 4.0, -3.0);
@@ -85,7 +98,7 @@ void main()
     
     float sun = pow(dot(dir, sunDirection), 4.0);
     vec3 sky = mix(vec3(0.8, 0.9, 0.95), vec3(1.0, 1.0, 0.8), sun);
-    vec3 color = sky + pow(sun, 10.0) * vec3(1.0);
+    vec3 color = sky;
     for (int i = 0; i < 128; i++)
     {
         float d = map(pos);
@@ -93,6 +106,7 @@ void main()
         {
             vec3 normal = computeNormal(pos);
             color = diffuse(normal) * albedo(pos) + specular(normal, dir);
+            color *= occlusion(pos, normal) * 0.8 + 0.2;
             break;
         }
         
