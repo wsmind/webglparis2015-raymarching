@@ -1,0 +1,7 @@
+Raymarching
+
+Raytracing
+Analytical shapes -> Distance fields
+Tracing -> Marching
+Benefits of marching (e.g. modulo)
+Tradeoffs

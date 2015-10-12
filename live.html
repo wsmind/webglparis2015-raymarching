@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style type="text/css">
+            body
+            {
+                margin: 0;
+                padding: 0;
+            }
+            
+            canvas
+            {
+                display: block;
+                margin: 0;
+                padding: 0;
+                position: absolute;
+                left: 50%;
+                width: 50%;
+                height: 100%;
+            }
+            
+            #code-editor
+            {
+                display: block;
+                margin: 0;
+                padding: 0;
+                position: absolute;
+                left: 0%;
+                width: 50%;
+                height: 100%;
+                font-size: 20px;
+            }
+            
+            #errors
+            {
+                display: none;
+                padding: 20px;
+                position: absolute;
+                left: 50%;
+                right: 0px;
+                top: 0px;
+                bottom: 0px;
+                font-size: 20px;
+                background-color: #456;
+                color: #eee;
+                font-weight: bold;
+            }
+            
+            #errors pre
+            {
+                white-space: pre-wrap;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas"></canvas>
+        <div id="code-editor">precision mediump float;
+
+uniform float time; // seconds
+uniform vec2 resolution; // pixels
+
+void main()
+{
+	vec2 uv = gl_FragCoord.xy / resolution;
+	vec3 color = vec3(uv, 0.0);
+	gl_FragColor = vec4(color, 1.0);
+}
+</div>
+        <div id="errors"></div>
+        <script type="text/javascript">
+            // from https://www.khronos.org/webgl/wiki/Debugging
+            /*function throwOnGLError(err, funcName, args) {
+              throw WebGLDebugUtils.glEnumToString(err) + " was caused by call to: " + funcName;
+            };
+            function logGLCall(functionName, args) {   
+               console.log("gl." + functionName + "(" + 
+                  WebGLDebugUtils.glFunctionArgsToString(functionName, args) + ")");   
+            }
+            function validateNoneOfTheArgsAreUndefined(functionName, args) {
+              for (var ii = 0; ii < args.length; ++ii) {
+                if (args[ii] === undefined) {
+                  console.error("undefined passed to gl." + functionName + "(" +
+                                 WebGLDebugUtils.glFunctionArgsToString(functionName, args) + ")");
+                }
+              }
+            }
+            function logAndValidate(functionName, args) {
+               logGLCall(functionName, args);
+               validateNoneOfTheArgsAreUndefined (functionName, args);
+            }*/
+
+            function resize()
+            {
+                canvas.width = canvas.clientWidth
+                canvas.height = canvas.clientHeight
+                gl.viewport(0, 0, canvas.width, canvas.height)
+            }
+            
+            window.onload = function()
+            {
+                canvas = document.getElementById("canvas")
+                //gl = WebGLDebugUtils.makeDebugContext(canvas.getContext("webgl"), throwOnGLError, logAndValidate);
+                gl = canvas.getContext("webgl")
+                resize()
+                
+                function makeVbo(buffer)
+                {
+                    var vbo = gl.createBuffer()
+                    gl.bindBuffer(gl.ARRAY_BUFFER, vbo)
+                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(buffer), gl.STATIC_DRAW)
+                    
+                    return vbo
+                }
+                
+                function destroyVbo(vbo)
+                {
+                    gl.deleteBuffer(vbo)
+                }
+                
+                var vs = "\
+                    attribute vec2 position;\
+                    void main()\
+                    {\
+                        gl_Position = vec4(position, 0.0, 1.0);\
+                    }\
+                "
+                
+                var positions = [
+                    -1.0, -1.0,
+                    -1.0, 1.0,
+                    1.0, -1.0,
+                    1.0, 1.0
+                ]
+                
+                var vboPositions = makeVbo(positions)
+                
+                var program = null
+                function render()
+                {
+                    var time = performance.now() * 0.001
+                    
+                    gl.clearColor(0.8, 0.9, 1.0, 1.0)
+                    gl.clear(gl.COLOR_BUFFER_BIT)
+                    
+                    if (program && !program.errors.length)
+                    {
+                        program.bind()
+                        program.setFloatUniform("time", time)
+                        program.setVec2Uniform("resolution", [canvas.width, canvas.height])
+                        
+                        gl.bindBuffer(gl.ARRAY_BUFFER, vboPositions)
+                        gl.enableVertexAttribArray(0)
+                        gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
+                        
+                        gl.drawArrays(gl.TRIANGLE_STRIP, 0, positions.length / 2)
+                    }
+                    
+                    requestAnimationFrame(render)
+                }
+                
+                requestAnimationFrame(render)
+                
+                function reload(editor)
+                {
+                    var code = editor.getValue()
+                    localStorage["code"] = code
+                    
+                    if (program)
+                        program.destroy()
+                    
+                    program = new ShaderProgram(vs, code)
+                    program.bindAttribLocation(0, "position")
+                    
+                    var errorDiv = document.getElementById("errors")
+                    if (program.errors.length)
+                    {
+                        canvas.style.display = "none"
+                        errorDiv.style.display = "block"
+                        errorDiv.innerHTML = "<pre>" + program.errors.join("\n") + "</pre>"
+                    }
+                    else
+                    {
+                        canvas.style.display = "block"
+                        errorDiv.style.display = "none"
+                    }
+                }
+                
+                var editorDiv = document.getElementById("code-editor")
+                var editor = ace.edit(editorDiv)
+                editor.setTheme("ace/theme/monokai");
+                editor.getSession().setMode("ace/mode/glsl");
+
+                // remove annoying or conflicting shortcuts
+                editor.commands.bindKeys({"Ctrl+L": undefined, "Ctrl+P": undefined, "Ctrl+T": undefined})
+
+                editor.commands.addCommand({
+                    name: "Reload code",
+                    bindKey: "Ctrl+S",
+                    exec: reload
+                })
+                
+                if (localStorage["code"])
+                {
+                    editor.setValue(localStorage["code"])
+                    editor.selection.clearSelection()
+                }
+                
+                reload(editor)
+                editor.focus()
+            }
+            
+            window.onresize = resize
+        </script>
+        <script type="text/javascript" src="ShaderProgram.js"></script>
+        <script type="text/javascript" src="webgl-debug.js"></script>
+        
+        <script src="lib/ace/ace.js"></script>
+        <script src="lib/ace/ext-searchbox.js"></script>
+        <script src="lib/ace/mode-glsl.js"></script>
+        <script src="lib/ace/mode-javascript.js"></script>
+        <script src="lib/ace/worker-javascript.js"></script>
+        <script src="lib/ace/theme-monokai.js"></script>
+    </body>
+</html>

@@ -1,0 +1,35 @@
+Web demo packing
+
+Context
+	FuckJS - has to be released
+	Part of toolchain
+		Preprocessor (opt.py, cool tricks with closure?)
+		Everything automated - no manual minification
+
+Common packing techniques
+	Minify
+	PNG hack
+
+The shader problem
+	Strings in JS - won't minify
+	Use another minifier! (glsl-unit, ctrl+alt+test), packs all but uniforms/attributes
+	Can we do better? (screenshot crteck or fade)
+	Merging all shaders into one (cat everything, multiple main_xx() functions)
+	Patching the minifier (dead code problem, output minified entry point names)
+	Final result (shaders.js)
+
+Pushing it
+	Some symbols still not minified (demo.min.js)
+	Compressing the names at runtime (regex, cannot use big hash eg 32bits)
+	Search and replace (quick and dirty ad hoc sed)
+
+Other things we tried
+	Minifying very frequent symbols (e.g function, var, this)
+		did not really work, huffman was already doing it optimally
+	Using libs (glMatrix) - it works - just make sure you remove the (function(){})() enclosing everything that prevents minification
+	Preprocessing using closure's static analysis (-> evO's slides)
+
+Size matters
+	Results
+
+Questions?
