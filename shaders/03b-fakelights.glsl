@@ -13,11 +13,6 @@ float sphere(vec3 pos, float radius)
     return length(pos) - radius;
 }
 
-float box(vec3 pos, vec3 size)
-{
-    return length(max(abs(pos) - size, 0.0));
-}
-
 float map(vec3 pos)
 {
     return min(plane(pos), sphere(pos, 2.0));
@@ -25,8 +20,8 @@ float map(vec3 pos)
 
 vec3 material(vec3 pos)
 {
-    float l = box(pos, vec3(2.0));
-    return 1.0 / l / l * vec3(1.0, 0.0, 0.0) * vec3(smoothstep(0.4, 0.41, fract(pos.x + sin(pos.z * 0.4 + time))));
+    float l = sphere(pos, 1.0);
+    return 1.0 / l / l * vec3(1.0, 0.6, 0.0) * vec3(smoothstep(0.4, 0.41, fract(pos.x + sin(pos.z * 0.4 + time))));
 }
 
 void main()
