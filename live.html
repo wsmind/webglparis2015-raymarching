@@ -70,13 +70,11 @@
         <div id="code-editor">precision mediump float;
 
 uniform float time; // seconds
-uniform vec2 resolution; // pixels
+varying vec2 uv;
 
 void main()
 {
-	vec2 uv = gl_FragCoord.xy / resolution;
-	vec3 color = vec3(uv, 0.0);
-	gl_FragColor = vec4(color, 1.0);
+	gl_FragColor = vec4(uv, 0.0, 1.0);
 }
 </div>
         <div id="errors"></div>
