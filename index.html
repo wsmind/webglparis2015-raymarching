@@ -139,6 +139,7 @@ float intersectPlane(vec3 pos, vec3 dir)
 					<pre><code data-trim>
 float plane(vec3 pos)
 {
+    // signed distance to plane y = 0
     return pos.y;
 }
 					</code></pre>
@@ -146,12 +147,37 @@ float plane(vec3 pos)
                 
 				<section>
 					<h2>Distance fields</h2>
-					<p>IMAGE</p>
+                    <p><img src="assets/distance-field.png" /></p>
 				</section>
                 
 				<section>
 					<h2>Distance fields</h2>
-					<p>sphere (rt) vs sphere (df)</p>
+                    <div class="column-left">
+                        <pre><code data-trim>
+float intersectSphere(vec3 pos, vec3 dir)
+{
+    // solve pos + k*dir = unit sphere surface
+    // dot(pos + k*dir, pos + k*dir) = 1
+
+    // quadratic coefficients
+    float a = dot(dir, dir);
+    float b = 2.0 * dot(pos, dir);
+    float c = dot(pos, pos) - 1.0;
+    float discriminant = b * b - 4.0 * a * c;
+
+    // only the positive root is useful
+    return (-b - sqrt(discriminant)) / (2.0 * a);
+}
+                        </code></pre>
+                    </div> 
+                    <div class="column-right">
+                        <pre><code data-trim>
+float sphere(vec3 pos, float radius)
+{
+    return length(pos) - radius;
+}
+                        </code></pre>
+                    </div> 
 				</section>
                 
 				<section>
