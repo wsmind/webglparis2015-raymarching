@@ -1,12 +1,8 @@
-﻿DemoJS 2014 - Web Demo Packing
+﻿WebGL Paris 2015 - Raymarching
 ==============================
 
-Slides from my talk about at DemoJS 2014.
+[Live version](http://wsmind.github.io/webglparis2015-raymarching/)
 
-[Live version](http://wsmind.github.io/demojs2014-web-demo-packing/)
-
-Copyright 2014 Rémi Papillié.
+Copyright 2015 Rémi Papillié.
 
 Made using the awesome [reveal.js](http://lab.hakim.se/reveal-js/).
-
-Video coming soon...
